@@ -15,6 +15,8 @@ class Utilities:
                              (1, -1), (1, 0), (1, 1)]
         # Tiles affected by physics
         self.PHYSICS_TILES = {"grass", "cobblestone"}
+        # Render scale for rendering surface
+        self.RENDER_SCALE = 2
 
     def load_image(self, directory):
         """Load and return the image"""

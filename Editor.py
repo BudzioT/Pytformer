@@ -4,6 +4,7 @@ import pygame
 
 from src.Utilities import Utilities
 from src.TileMap import TileMap
+from src.Camera import Camera
 
 
 class Editor:
@@ -24,6 +25,8 @@ class Editor:
         self.tile_map = TileMap(self)
         # Utilities
         self.utilities = Utilities()
+        # Camera
+        self.camera = Camera()
 
         # Assets of the map editor
         self.assets = {
@@ -34,6 +37,28 @@ class Editor:
             "decorations": self.utilities.load_images("tiles/decorations")
         }
 
+        # Tile general variables
+        self.tile_list = list(self.assets)
+        self.tile_group = 0
+        self.tile_variant = 0
+
+        # Mouse position
+        self.mouse_pos = pygame.mouse.get_pos()
+
+        # Tile current variables
+        self.tile_image = None
+        self.tile_pos = (0, 0)
+        self._update_tile()
+
+        # Control variables
+        self.click = False
+        self.right_click = False
+        self.shift = False
+        self.grid = True
+
+        # Movement
+        self.movement = [False, False, False, False]
+
         # FPS timer
         self.timer = pygame.time.Clock()
 
@@ -42,6 +67,11 @@ class Editor:
         while True:
             # Handle events
             self._get_events()
+
+            # Update the surface
+            self._update_surface()
+            # Update positions
+            self._update_pos()
 
             # Make the game run in 60 FPS
             self.timer.tick(60)
@@ -55,21 +85,76 @@ class Editor:
                 sys.exit()
             # If user clicks the mouse, handle the mouse button down events
             if event.type == pygame.MOUSEBUTTONDOWN:
-                self._handle_mousedown()
+                self._handle_mousedown(event)
+
+    def _handle_mousedown(self, event):
+        """Handle mouse button down events"""
+        # Handle left click
+        if event.button == 1:
+            self.click = True
+            # If the element is an off-grid one, place the decoration
+            if not self.grid:
+                self.tile_map.deco_tile_map.append({})
+
 
     def _update_surface(self):
         """Update the surface"""
+        # Clean the surface
+        self.display.fill((0, 0, 0))
+
         # Scale and blit the rendering surface to the main one
         self.surface.blit(
             pygame.transform.scale(self.display, self.surface.get_size()), (0, 0))
 
+        # Draw the tile map
+        self.tile_map.draw(self.display, self.camera.scroll)
+
+        # Draw current tile
+        self._draw_current_tile()
+
         # Show all the changes
         pygame.display.update()
 
-    def _handle_mousedown(self):
-        """Handle mouse button down events"""
+    def _update_pos(self):
+        """Update position of things"""
+        self.camera.update_scroll_editor(self.movement)
+
+    def _update_tile(self):
+        """Update and change the tile"""
+        self.tile_group = 0
+        self.tile_variant = 0
+        # Get the current tile
+        self.tile_image = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
+        # Make it see-through to help building
+        self.tile_image.set_alpha(80)
+
+        # Set the tile position based off grid
+        tile_x = int((self.mouse_pos[0] + self.camera.scroll[0]) // self.tile_map.size)
+        tile_y = int((self.mouse_pos[1] + self.camera.scroll[1]) // self.tile_map.size)
+        self.tile_pos = (tile_x, tile_y)
+
+    def _draw_current_tile(self):
+        """Draw the tile based on few factors"""
+        # Draw current tile on grid
+        if self.grid:
+            tile_x = self.tile_pos[0] * self.tile_map.size - self.camera.scroll[0]
+            tile_y = self.tile_pos[1] * self.tile_map.size - self.camera.scroll[1]
+            self.display.blit(self.tile_image, (tile_x, tile_y))
+        # Draw current tile at mouse position
+        else:
+            self.display.blit(self.tile_image, self.mouse_pos)
+
+        # Place the tiles
+        self._place_tiles()
+        self.display.blit(self.tile_image, (5, 5))
+
+    def _place_tiles(self):
+        """Place the chosen tiles"""
         pass
 
 
-editor = Editor()
-editor.run()
+# Only run using this file
+if __name__ == "__main__":
+    # Create
+    editor = Editor()
+    editor.run()
