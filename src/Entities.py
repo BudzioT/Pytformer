@@ -1,5 +1,6 @@
 import pygame
 
+
 class PhysicsEntity:
     def __init__(self, game, entity_type, entity_pos, entity_size):
         """Initialize physics entity"""
@@ -17,8 +18,19 @@ class PhysicsEntity:
         # Save movement, by increasing it by velocity
         pos_increase = (movement[0] + self.velocity[0], movement[1] + self.velocity[1])
         # Add movement to the current position
-        self.pos[0], self.pos[1] = pos_increase[0], pos_increase[1]
+        self.pos[0] += pos_increase[0]
+        # Save entity's rectangle
+        rect = self.rect()
+
+        # Add movement to the current position
+        self.pos[1] += pos_increase[1]
+        # Save entity's rectangle
+        rect = self.rect()
 
     def draw(self, surface):
         """Draw the entity"""
-        pass
+        surface.blit(self.game.assets["player"], self.pos)
+
+    def rect(self):
+        """Return rectangle of entity"""
+        return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
