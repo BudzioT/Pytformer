@@ -1,5 +1,6 @@
 import random
 
+
 class Cloud:
     """Cloud that flies through the skies"""
     def __init__(self, pos, image, speed, pos_z):

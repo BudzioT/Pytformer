@@ -3,7 +3,7 @@ import os
 
 import pygame
 
-from src.Entities import PhysicsEntity
+from src.Entities import PhysicsEntity, Player
 from src.Utilities import Utilities
 from src.TileMap import TileMap
 from src.Camera import Camera
@@ -45,16 +45,15 @@ class Pytformer:
             # Player animations
             "player_animations": {
                 "jump": Animation(self.utilities.load_images("entities/player/jump"), 5),
-                "idle": Animation(self.utilities.load_images("entities/player/idle"), 9),
-                "run": Animation(self.utilities.load_images("entities/player/run"), 5),
+                "idle": Animation(self.utilities.load_images("entities/player/idle"), 30),
+                "run": Animation(self.utilities.load_images("entities/player/run"), 7),
                 "slide": Animation(self.utilities.load_images("entities/player/slide")),
                 "wall_slide": Animation(self.utilities.load_images("entities/player/wall_slide"))
             }
         }
 
         # Create player
-        self.player = PhysicsEntity(self, "Player",
-                                    (100, 100), (8, 15))
+        self.player = Player(self, (100, 100), (8, 15))
         # Clouds
         self.clouds = Clouds(self.assets["clouds"])
 
