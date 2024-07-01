@@ -6,6 +6,8 @@ import pygame
 from src.Entities import PhysicsEntity
 from src.Utilities import Utilities
 from src.TileMap import TileMap
+from src.Camera import Camera
+from src.Clouds import Clouds
 
 
 class Pytformer:
@@ -30,19 +32,27 @@ class Pytformer:
 
         # Assets of the game
         self.assets = {
+            # Entities
             "player": self.utilities.load_image("entities/player.png"),
+            # Tiles
             "grass": self.utilities.load_images("tiles/grass"),
+            "cobblestone": self.utilities.load_images("tiles/cobblestone"),
+            # Others
             "decorations": self.utilities.load_images("tiles/decorations"),
-            "cobblestone": self.utilities.load_images("tiles/cobblestone")
+            "background": self.utilities.load_images()
         }
 
         # Create player
         self.player = PhysicsEntity(self, "Player",
                                     (100, 100), (8, 15))
+        # Clouds
+        self.clouds = Clouds()
+
         # Create tile map
         self.tile_map = TileMap(self)
 
-        # Camera scroll
+        # Camera
+        self.camera = Camera(self)
 
         # FPS timer
         self.timer = pygame.time.Clock()
@@ -53,11 +63,13 @@ class Pytformer:
         while True:
             # Handle the events
             self._get_events()
-            print(self.tile_map.physics_tiles_near(self.player.pos))
+
             # Update the surface
             self._update_surface()
+
             # Update positions
             self._update_pos()
+
             # Run the game in 60 FPS
             self.timer.tick(60)
 
@@ -104,10 +116,10 @@ class Pytformer:
         self.display.fill((2, 2, 2))
 
         # Draw the tile map
-        self.tile_map.draw(self.display)
+        self.tile_map.draw(self.display, self.camera.scroll)
 
         # Draw the player
-        self.player.draw(self.display)
+        self.player.draw(self.display, self.camera.scroll)
 
         # Blit the rendering surface onto the main one, scale it
         self.surface.blit(
@@ -118,6 +130,9 @@ class Pytformer:
 
     def _update_pos(self):
         """Update positions of things"""
+        # Update camera scroll
+        self.camera.update_scroll(self.display)
+
         # Update the player
         self.player.update(self.tile_map,
                            (self.movement[1] - self.movement[0], 0))

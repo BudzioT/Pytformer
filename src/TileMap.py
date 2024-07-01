@@ -26,17 +26,19 @@ class TileMap:
             self.tile_map["10;" + str(5 + i)] = \
                 {"type": "cobblestone", "variant": 1, "pos": (10, 5 + i)}
 
-    def draw(self, surface):
+    def draw(self, surface, offset=(0, 0)):
         """Draw the tiles"""
         # Render tiles not affected by physics
         for tile in self.deco_tile_map:
-            surface.blit(self.game.assets[tile["type"]][tile["variant"]], tile["pos"])
+            surface.blit(self.game.assets[tile["type"]][tile["variant"]],
+                         (tile["pos"][0] - offset[0], tile["pos"][1] - offset[1]))
 
         # Render tiles affected by physics
         for location in self.tile_map:
             tile = self.tile_map[location]
             surface.blit(self.game.assets[tile["type"]][tile["variant"]],
-                         (tile["pos"][0] * self.size, tile["pos"][1] * self.size))
+                         (tile["pos"][0] * self.size - offset[0],
+                          tile["pos"][1] * self.size - offset[1]))
 
     def _get_tiles_near(self, pos):
         """Return tiles near the given position"""

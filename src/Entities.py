@@ -38,7 +38,7 @@ class PhysicsEntity:
                     rect.right = tile_rect.left
                     self.collisions["Right"] = True
                 # If player moves to the left, hug him to the wall
-                if pos_increase[1] < 0:
+                if pos_increase[0] < 0:
                     rect.left = tile_rect.right
                     self.collisions["Left"] = True
                 # Update the position
@@ -70,9 +70,10 @@ class PhysicsEntity:
         if self.collisions["Up"] or self.collisions["Down"]:
             self.velocity[1] = 0
 
-    def draw(self, surface):
+    def draw(self, surface, offset=(0, 0)):
         """Draw the entity"""
-        surface.blit(self.game.assets["player"], self.pos)
+        surface.blit(self.game.assets["player"],
+                     (self.pos[0] - offset[0], self.pos[1] - offset[1]))
 
     def rect(self):
         """Return rectangle of entity"""
