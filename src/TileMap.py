@@ -19,13 +19,6 @@ class TileMap:
         # Tiles not affected by physics
         self.deco_tile_map = {}
 
-        # Spawn grass and cobble for test
-        for i in range(10):
-            self.tile_map[str(3 + i) + ";10"] = \
-                {"type": "grass", "variant": 1, "pos": (3 + i, 10)}
-            self.tile_map["10;" + str(5 + i)] = \
-                {"type": "cobblestone", "variant": 1, "pos": (10, 5 + i)}
-
     def draw(self, surface, offset=(0, 0)):
         """Draw the tiles"""
         # Render tiles not affected by physics (off-grid ones)
