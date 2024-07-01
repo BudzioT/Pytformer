@@ -13,8 +13,14 @@ class PhysicsEntity:
         self.velocity = [0, 0]
         self.size = entity_size
 
+        # Entity action
+        self.action = ''
+
         # Collision booleans
         self.collisions = {"Left": False, "Right": False, "Up": False, "Down": False}
+
+        # Animation variables
+        self.animation = None
 
     def update(self, tile_map, movement=(0, 0)):
         """Update position of entity"""
@@ -78,3 +84,8 @@ class PhysicsEntity:
     def rect(self):
         """Return rectangle of entity"""
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+
+    def set_action(self, action):
+        if action != self.action:
+            self.action = action
+            self.animation = self.game.assets[self.type + '_animations'][action].copy()

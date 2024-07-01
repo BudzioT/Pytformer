@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7db572a5-7e69-424e-a551-2fcb4f00ee0f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Camera.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Clouds.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Animation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pytformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pytformer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/background.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/sky/background.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/sky/cloud0.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/sky/clouds/cloud0.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/sky/cloud1.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/sky/clouds/cloud1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Clouds.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Clouds.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Entities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entities.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TileMap.py" afterDir="false" />
     </list>
@@ -53,10 +56,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\sky\clouds" />
+      <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\sky" />
       <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies" />
       <recent name="D:\Pobrane\Github_projects\Pytformer" />
       <recent name="D:\Pobrane\Github_projects\Pytformer\src\images" />
-      <recent name="D:\Pobrane\Github_projects\Pytformer\src" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -76,7 +80,7 @@
       <option name="presentableId" value="Default" />
       <updated>1719775198219</updated>
       <workItem from="1719775199574" duration="3641000" />
-      <workItem from="1719828729584" duration="13231000" />
+      <workItem from="1719828729584" duration="17039000" />
     </task>
     <servers />
   </component>
@@ -85,7 +89,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Pytformer$TileMap.coverage" NAME="TileMap Coverage Results" MODIFIED="1719838118525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/Pytformer$Pytformer.coverage" NAME="Pytformer Coverage Results" MODIFIED="1719842880680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Pytformer$Pytformer.coverage" NAME="Pytformer Coverage Results" MODIFIED="1719846475431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Pytformer$Entities.coverage" NAME="Entities Coverage Results" MODIFIED="1719838463087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>

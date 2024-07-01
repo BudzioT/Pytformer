@@ -55,7 +55,7 @@ class Clouds:
             self.clouds.append(new_cloud)
 
         # Sort the clouds, so the Z position counts
-        self.clouds.sort(key=lambda cloud: cloud.depth)
+        self.clouds.sort(key=lambda cloud: cloud.pos_z)
 
     def update(self):
         """Update position of clouds"""

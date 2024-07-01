@@ -8,6 +8,7 @@ from src.Utilities import Utilities
 from src.TileMap import TileMap
 from src.Camera import Camera
 from src.Clouds import Clouds
+from src.Animation import Animation
 
 
 class Pytformer:
@@ -39,14 +40,23 @@ class Pytformer:
             "cobblestone": self.utilities.load_images("tiles/cobblestone"),
             # Others
             "decorations": self.utilities.load_images("tiles/decorations"),
-            "background": self.utilities.load_images()
+            "background": self.utilities.load_image("sky/background.png"),
+            "clouds": self.utilities.load_images("sky/clouds/"),
+            # Player animations
+            "player_animations": {
+                "jump": Animation(self.utilities.load_images("entities/player/jump"), 5),
+                "idle": Animation(self.utilities.load_images("entities/player/idle"), 9),
+                "run": Animation(self.utilities.load_images("entities/player/run"), 5),
+                "slide": Animation(self.utilities.load_images("entities/player/slide")),
+                "wall_slide": Animation(self.utilities.load_images("entities/player/wall_slide"))
+            }
         }
 
         # Create player
         self.player = PhysicsEntity(self, "Player",
                                     (100, 100), (8, 15))
         # Clouds
-        self.clouds = Clouds()
+        self.clouds = Clouds(self.assets["clouds"])
 
         # Create tile map
         self.tile_map = TileMap(self)
@@ -91,6 +101,9 @@ class Pytformer:
 
     def _handle_keydown_events(self, event):
         """Handle keydown events"""
+        if event.key == pygame.K_ESCAPE:
+            pygame.quit()
+            sys.exit()
         # Movement to the left
         if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.movement[0] = True
@@ -112,8 +125,9 @@ class Pytformer:
 
     def _update_surface(self):
         """Update the surface"""
-        # Clean the surface
-        self.display.fill((2, 2, 2))
+        # Draw the clouds and sky
+        self.display.blit(self.assets["background"], (0, 0))
+        self.clouds.draw(self.display)
 
         # Draw the tile map
         self.tile_map.draw(self.display, self.camera.scroll)
@@ -136,6 +150,8 @@ class Pytformer:
         # Update the player
         self.player.update(self.tile_map,
                            (self.movement[1] - self.movement[0], 0))
+        # Update clouds
+        self.clouds.update()
 
 
 # Only run the game with this file
