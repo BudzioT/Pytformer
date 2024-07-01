@@ -3,7 +3,7 @@ import os
 
 import pygame
 
-from src.Entities import  PhysicsEntity
+from src.Entities import PhysicsEntity
 from src.Utilities import Utilities
 from src.TileMap import TileMap
 
@@ -36,13 +36,13 @@ class Pytformer:
             "cobblestone": self.utilities.load_images("tiles/cobblestone")
         }
 
-        print(self.assets)
-
         # Create player
         self.player = PhysicsEntity(self, "Player",
                                     (100, 100), (8, 15))
         # Create tile map
         self.tile_map = TileMap(self)
+
+        # Camera scroll
 
         # FPS timer
         self.timer = pygame.time.Clock()
@@ -53,6 +53,7 @@ class Pytformer:
         while True:
             # Handle the events
             self._get_events()
+            print(self.tile_map.physics_tiles_near(self.player.pos))
             # Update the surface
             self._update_surface()
             # Update positions
@@ -86,7 +87,7 @@ class Pytformer:
             self.movement[1] = True
         # Jump
         if event.key == pygame.K_UP or event.key == pygame.K_w:
-            self.player.velocity[1] = -4
+            self.player.velocity[1] = -3
 
     def _handle_keyup_events(self, event):
         """Handle keyup events"""
@@ -118,7 +119,8 @@ class Pytformer:
     def _update_pos(self):
         """Update positions of things"""
         # Update the player
-        self.player.update((self.movement[1] - self.movement[0], 0))
+        self.player.update(self.tile_map,
+                           (self.movement[1] - self.movement[0], 0))
 
 
 # Only run the game with this file

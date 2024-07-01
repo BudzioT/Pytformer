@@ -10,6 +10,11 @@ class Utilities:
         self.BASE_PATH = os.path.dirname(os.path.abspath(__file__))
         # Images directory
         self.IMG_PATH = os.path.join(self.BASE_PATH, "../dependencies/images/")
+        # Near offsets of grid tiles
+        self.NEAR_OFFSETS = [(0, 0), (0, 1), (0, -1), (-1, -1), (-1, 0), (-1, 1),
+                             (1, -1), (1, 0), (1, 1)]
+        # Tiles affected by physics
+        self.PHYSICS_TILES = {"grass", "cobblestone"}
 
     def load_image(self, directory):
         """Load and return the image"""
