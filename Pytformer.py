@@ -49,6 +49,10 @@ class Pytformer:
                 "run": Animation(self.utilities.load_images("entities/player/run"), 7),
                 "slide": Animation(self.utilities.load_images("entities/player/slide")),
                 "wall_slide": Animation(self.utilities.load_images("entities/player/wall_slide"))
+            },
+            # Particles
+            "particles": {
+                "normal": Animation(self.utilities.load_images("particles/normal"), 20, False)
             }
         }
 

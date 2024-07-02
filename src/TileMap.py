@@ -91,3 +91,25 @@ class TileMap:
         self.tile_map = data["tile_map"]
         self.size = data["tile_size"]
         self.deco_tile_map = data["off_grid"]
+
+    def auto_tile(self):
+        """Change variants depending on the placement automatically"""
+        # Go through each tile location in map
+        for location in self.tile_map:
+            # Get the tile based of location
+            tile = self.tile_map[location]
+            near_tiles = set()
+            # Go through each near tile
+            for near in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                # Calculate the near tile location in JSON format
+                near_location = str(tile["pos"][0] + near[0]) + ';' + str(tile["pos"][1] + near[1])
+                # If there is a tile and not just empty space, add it to the near tiles set
+                if near_location in self.tile_map:
+                    near_tiles.add(near)
+            # Sort them for auto tile rules checking
+            near_tiles = tuple(sorted(near_tiles))
+            # If this group of tiles is affected by auto-tiling and a rule applies, change its variant
+            if (tile["type"] in self.utilities.AUTO_TILE_TILES) and (near_tiles
+                                                                     in self.utilities.AUTO_TILE_RULES):
+                tile["variant"] = self.utilities.AUTO_TILE_RULES[near_tiles]
+
