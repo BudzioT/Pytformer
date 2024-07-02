@@ -27,8 +27,10 @@ class Pytformer:
 
         # Game surface
         self.surface = pygame.display.set_mode((640, 480))
-        # Render help display
-        self.display = pygame.Surface((320, 240))
+        # Render help display with background
+        self.display = pygame.Surface((320, 240), pygame.SRCALPHA)
+        # Surface without background
+        self.display_2 = pygame.Surface((320, 240))
         # Game utilities
         self.utilities = Utilities()
 
@@ -69,6 +71,24 @@ class Pytformer:
             }
         }
 
+        sound_path = "../dependencies/sounds/"
+
+        # Sound effects
+        self.sound_effects = {
+            "jump": pygame.mixer.Sound(os.path.join(self.utilities.BASE_PATH, sound_path + "jump.flac")),
+            "dash": pygame.mixer.Sound(os.path.join(self.utilities.BASE_PATH, sound_path + "dash.wav")),
+            "hit": pygame.mixer.Sound(os.path.join(self.utilities.BASE_PATH, sound_path + "hit.mp3")),
+            "shoot": pygame.mixer.Sound(os.path.join(self.utilities.BASE_PATH, sound_path + "shoot.mp3")),
+            "ambience": pygame.mixer.Sound(os.path.join(self.utilities.BASE_PATH, sound_path + "ambience.mp3"))
+        }
+
+        # Adjust volumes
+        self.sound_effects["jump"].set_volume(0.8)
+        self.sound_effects["dash"].set_volume(0.9)
+        self.sound_effects["hit"].set_volume(0.9)
+        self.sound_effects["shoot"].set_volume(0.5)
+        self.sound_effects["ambience"].set_volume(0.2)
+
         # Create player
         self.player = Player(self, (100, 100), (8, 15))
         # Clouds
@@ -94,6 +114,9 @@ class Pytformer:
         while True:
             # Handle the events
             self._get_events()
+
+            # Update the music
+            self._update_music()
 
             # Update the surface
             self._update_surface()
@@ -135,7 +158,8 @@ class Pytformer:
             self.player.last_movement = [-1, self.player.last_movement[1]]
         # Jump
         if event.key == pygame.K_UP or event.key == pygame.K_w:
-            self.player.jump()
+            if self.player.jump():
+                self.sound_effects["jump"].play()
         # Dash
         if event.key == pygame.K_x or event.key == pygame.K_l:
             self.player.dash()
@@ -151,9 +175,12 @@ class Pytformer:
 
     def _update_surface(self):
         """Update the surface"""
+        # Fill the outline display
+        self.display.fill((0, 0, 0, 0))
+
         # Draw the clouds and sky
-        self.display.blit(self.assets["background"], (0, 0))
-        self.clouds.draw(self.display)
+        self.display_2.blit(self.assets["background"], (0, 0))
+        self.clouds.draw(self.display_2)
 
         # Draw the tile map
         self.tile_map.draw(self.display, self.camera.scroll)
@@ -174,15 +201,34 @@ class Pytformer:
         # Draw and update sparks
         self._draw_sparks()
 
+        # Create a mask
+        display_mask = pygame.mask.from_surface(self.display)
+        display_silhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+        for offset in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            self.display_2.blit(display_silhouette, offset)
+
         # Draw the transition if needed
         self._draw_transition()
 
+        self.display_2.blit(self.display, (0, 0))
+
         # Blit the rendering surface onto the main one, scale it
         self.surface.blit(
-            pygame.transform.scale(self.display, self.surface.get_size()), self.camera.screen_shake_offset)
+            pygame.transform.scale(self.display_2, self.surface.get_size()), self.camera.screen_shake_offset)
 
         # Update the display surface
         pygame.display.update()
+
+    def _update_music(self):
+        """Update the music"""
+        # Load and update the music and loop it
+        pygame.mixer.music.load(os.path.join(self.utilities.BASE_PATH,
+                                             "../dependencies/sounds/music/basic.wav"))
+        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.play(-1)
+
+        # Load and update the ambience sounds, loop it
+        # self.sound_effects["ambience"].play(-1)
 
     def _update_pos(self):
         """Update positions of things"""
@@ -214,24 +260,14 @@ class Pytformer:
 
         # Leaf particle spawners - the trees
         self.leaf_spawners = []
-        # Go through each tree in the map
-        for tree in self.tile_map.extract([("big_decorations", 1)], True):
-            # Calculate the spawner location based off tree
-            leaf_spawner = pygame.Rect(4 + tree["pos"][0], 4 + tree["pos"][1], 23, 13)
-            # Add it to the list
-            self.leaf_spawners.append(leaf_spawner)
+        # Set the leaf spawners
+        self._set_leaf_spawners()
 
         # Enemies
         self.enemies = []
 
         # Set up entity spawners
-        for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
-            if spawner["variant"] == 0:
-                self.player.pos = spawner["pos"]
-                # Reset the air time on death
-                self.player.air_time = 0
-            else:
-                self.enemies.append(Enemy(self, spawner["pos"], (8, 18)))
+        self._set_entity_spawners()
 
         # Death count
         self.death = 0
@@ -300,6 +336,8 @@ class Pytformer:
                     self.projectiles.remove(projectile)
                     # Increase death count
                     self.death += 1
+                    # Play the death sound effect
+                    self.sound_effects["hit"].play()
                     # Increase screen shake
                     self.camera.screen_shake = max(16, self.camera.screen_shake)
 
@@ -325,9 +363,31 @@ class Pytformer:
                 self.particles.append(Particle(self, "leaf", pos,
                                                [-0.1, 0.3], random.randint(0, 20)))
 
+    def _set_leaf_spawners(self):
+        """Set the leaf spawners"""
+        # Go through each tree in the map
+        for tree in self.tile_map.extract([("big_decorations", 1)], True):
+            # Calculate the spawner location based off tree
+            leaf_spawner = pygame.Rect(4 + tree["pos"][0], 4 + tree["pos"][1], 23, 13)
+            # Add it to the list
+            self.leaf_spawners.append(leaf_spawner)
+
+    def _set_entity_spawners(self):
+        """Set the entity spawners"""
+        for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
+            if spawner["variant"] == 0:
+                self.player.pos = spawner["pos"]
+                # Reset the air time on death
+                self.player.air_time = 0
+            else:
+                self.enemies.append(Enemy(self, spawner["pos"], (8, 18)))
+
     def _update_player(self):
         if self.death:
             self.death += 1
+            # Make the transition effect
+            if self.death >= 10:
+                self.transition = min(30, self.transition + 1)
             if self.death > 40:
                 self._load_level(self.level)
 
@@ -353,7 +413,9 @@ class Pytformer:
             self.transition += 1
             # If transition is past 30, load new level
             if self.transition > 30:
-                self.level += 1
+                # Limit the levels to the amount that exists
+                self.level = min(self.level + 1, len(os.listdir(os.path.join(self.utilities.BASE_PATH,
+                                                                             "../dependencies/data"))) - 1)
                 self._load_level(self.level)
         # If transition is less than 0 (at the beginning), then increase it to show more of the map
         if self.transition < 0:
@@ -368,6 +430,10 @@ class Pytformer:
             # Draw a circle based off transition value (times 8, because of surface size)
             pygame.draw.circle(transition_surface, (255, 255, 255), (self.display.get_width() // 2,
                                self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
+            # Change color key (invisibility)
+            transition_surface.set_colorkey((255, 255, 255))
+            # Finally, draw the transition
+            self.display.blit(transition_surface, (0, 0))
 
 
 # Only run the game with this file

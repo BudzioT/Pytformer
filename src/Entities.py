@@ -270,6 +270,8 @@ class Player(PhysicsEntity):
         """Make player dash"""
         # If player isn't dashing
         if not self.dashing:
+            # Play the dash sound effect
+            self.game.sound_effects["dash"].play()
             # If dashing to the left, set the dashing direction to left (minus) and time to 60
             if self.flip_animation:
                 self.dashing = -60
@@ -313,6 +315,8 @@ class Enemy(PhysicsEntity):
                 if abs(distance[1]) < 16:
                     # If player is on the left, and enemy is facing him, shoot
                     if self.flip_animation and distance[0] < 0:
+                        # Shoot sound effect
+                        self.game.sound_effects["shoot"].play()
                         self.game.projectiles.append(
                             [[self.rect().centerx - 1, self.rect().centery], -1.5, 0])
                         for spark_num in range(4):
@@ -320,6 +324,8 @@ class Enemy(PhysicsEntity):
                                                           random.random() - 0.5 + math.pi, 2 + random.random()))
                     # If player is on the right, and enemy is facing him, shoot
                     if not self.flip_animation and distance[0] > 0:
+                        # Play shoot sound effect
+                        self.game.sound_effects["shoot"].play()
                         self.game.projectiles.append([[self.rect().centerx + 1, self.rect().centery], 1.5, 0])
                         for spark_num in range(4):
                             self.game.sparks.append(Spark(self.game.projectiles[-1][0],
@@ -341,6 +347,8 @@ class Enemy(PhysicsEntity):
         if abs(self.game.player.dashing) >= 50:
             # If enemy collides with player, create sparks and particles
             if self.rect().colliderect(self.game.player.rect()):
+                # Play the hit sound effect
+                self.game.sound_effects["hit"].play()
                 # Increase screen shake
                 self.game.camera.screen_shake = max(16, self.game.camera.screen_shake)
                 # Create sparks and particles

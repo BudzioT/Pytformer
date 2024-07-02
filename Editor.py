@@ -65,7 +65,7 @@ class Editor:
 
         # Load the level map if it exists
         try:
-            self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
+            self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../level.json"))
         # Continue if file is not found
         except FileNotFoundError:
             pass
@@ -195,7 +195,7 @@ class Editor:
             self.tile_map.auto_tile()
         # Save the changes by clicking return (or enter)
         if event.key == pygame.K_RETURN:
-            self.tile_map.save(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
+            self.tile_map.save(os.path.join(self.utilities.BASE_PATH, "../level.json"))
 
     def _handle_keyup(self, event):
         """Handle key up events"""
@@ -211,6 +211,9 @@ class Editor:
         # Stop moving down
         if event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.movement[3] = False
+        # Stop holding shift
+        if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+            self.shift = False
 
     def _update_surface(self):
         """Update the surface"""
