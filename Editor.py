@@ -146,6 +146,16 @@ class Editor:
                 # Reset variant to remain valid index
                 self.tile_variant = 0
 
+        # If the element is an off-grid one, place the decoration
+        if self.click and not self.grid:
+            # Get the group, variant and position
+            group = self.tile_list[self.tile_group]
+            variant = self.tile_variant
+            pos = (self.mouse_pos[0] + self.camera.scroll[0], self.mouse_pos[1] +
+                    self.camera.scroll[1])
+            # Save them into JSON format
+            self.tile_map.deco_tile_map.append({"type": group, "variant": variant, "pos": pos})
+
     def _handle_mouseup(self, event):
         """Handle mouse button up events"""
         # User stopped clicking left button
@@ -273,16 +283,6 @@ class Editor:
         # Remove the tiles on right click
         if self.right_click:
             self._remove_tiles()
-
-        # If the element is an off-grid one, place the decoration
-        if self.click and not self.grid:
-            # Get the group, variant and position
-            group = self.tile_list[self.tile_group]
-            variant = self.tile_variant
-            pos = (self.mouse_pos[0] + self.camera.scroll[0], self.mouse_pos[1] +
-                    self.camera.scroll[1])
-            # Save them into JSON format
-            self.tile_map.deco_tile_map.append({"type": group, "variant": variant, "pos": pos})
 
     def _remove_tiles(self):
         """Remove the existing tiles on right click"""

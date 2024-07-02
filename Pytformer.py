@@ -5,7 +5,7 @@ import random
 
 import pygame
 
-from src.Entities import PhysicsEntity, Player
+from src.Entities import Player, Enemy
 from src.Utilities import Utilities
 from src.TileMap import TileMap
 from src.Camera import Camera
@@ -46,6 +46,7 @@ class Pytformer:
             "big_decorations": self.utilities.load_images("tiles/big_decorations"),
             "background": self.utilities.load_image("sky/background.png"),
             "clouds": self.utilities.load_images("sky/clouds/"),
+            "gun": self.utilities.load_image("weapon/gun.png"),
             # Player animations
             "player_animations": {
                 "jump": Animation(self.utilities.load_images("entities/player/jump"), 5),
@@ -53,6 +54,11 @@ class Pytformer:
                 "run": Animation(self.utilities.load_images("entities/player/run"), 7),
                 "slide": Animation(self.utilities.load_images("entities/player/slide")),
                 "wall_slide": Animation(self.utilities.load_images("entities/player/wall_slide"))
+            },
+            # Enemy animations
+            "enemy_animations": {
+                "idle": Animation(self.utilities.load_images("entities/enemy/idle"), 30),
+                "run": Animation(self.utilities.load_images("entities/enemy/run"), 7)
             },
             # Particles
             "particles": {
@@ -62,7 +68,7 @@ class Pytformer:
         }
 
         # Create player
-        self.player = Player(self, (100, 100), (8, 15))
+        self.player = Player(self, (100, 100), (8, 17))
         # Clouds
         self.clouds = Clouds(self.assets["clouds"])
 
@@ -83,12 +89,15 @@ class Pytformer:
             # Add it to the list
             self.leaf_spawners.append(leaf_spawner)
 
+        # Enemies
+        self.enemies = []
+
         # Set up entity spawners
         for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
             if spawner["variant"] == 0:
                 self.player.pos = spawner["pos"]
             else:
-                print("Enemy spawner pos:", spawner["pos"])
+                self.enemies.append(Enemy(self, spawner["pos"], (8, 15)))
 
         # Camera
         self.camera = Camera(self)
@@ -165,6 +174,10 @@ class Pytformer:
 
         # Draw the tile map
         self.tile_map.draw(self.display, self.camera.scroll)
+
+        for enemy in self.enemies.copy():
+            enemy.update(self.tile_map, (0, 0))
+            enemy.draw(self.display, self.camera.scroll)
 
         # Draw the player
         self.player.draw(self.display, self.camera.scroll)

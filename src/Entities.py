@@ -271,3 +271,55 @@ class Player(PhysicsEntity):
             # If dashing to the right, set the dashing direction to right and time to 60
             else:
                 self.dashing = 60
+
+
+class Enemy(PhysicsEntity):
+    """Enemy entity"""
+    def __init__(self, game, pos, size):
+        """Initialize the enemy"""
+        super().__init__(game, "enemy", pos, size)
+        # Walk timer
+        self.walking = 0
+
+    def update(self, tile_map, movement=(0, 0)):
+        """Update position of the enemy"""
+        # If enemy is walking, continue walking in the right direction
+        if self.walking:
+            # If the next tile is solid, move forward
+            if tile_map.solid_check((self.rect().centerx + (-7 if self.flip_animation else 7),
+                                     self.pos[1] + 23)):
+                # If there is a wall, change direction
+                if self.collisions["Right"] or self.collisions["Left"]:
+                    self.flip_animation = not self.flip_animation
+                # If not, move forward
+                else:
+                    movement = (movement[0] - 0.5 if self.flip_animation else 0.5, movement[1])
+            # If there is an edge, change the direction
+            else:
+                self.flip_animation = not self.flip_animation
+
+            # Decrease the timer
+            self.walking = max(0, self.walking - 1)
+
+            if not self.walking:
+                pass
+
+        # If enemy isn't walking, move every 100 frames for a random time
+        elif random.random() < 0.01:
+            self.walking = random.randint(30, 120)
+        super().update(tile_map, movement)
+
+    def draw(self, surface, offset=(0, 0)):
+        """Draw the enemy"""
+        super().draw(surface, offset)
+
+        # If the enemy is facing left, flip the gun too, place it in the correct placement
+        if self.flip_animation:
+            pos_x = self.rect().centerx - 4 - self.game.assets["gun"].get_width() - offset[0]
+            pos_y = self.rect().centerx - 4 - self.game.assets["gun"].get_width() - offset[1]
+            surface.blit(pygame.transform.flip(self.game.assets["gun"], True, False),
+                         (pos_x, pos_y))
+        # Else just place it correctly
+        else:
+            surface.blit(self.game.assets["gun"], (self.rect().centerx + 4 - offset[0],
+                                                   self.rect().centery - offset[1]))

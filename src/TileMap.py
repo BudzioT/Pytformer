@@ -141,3 +141,13 @@ class TileMap:
                     del self.tile_map[location]
 
         return matches
+
+    def solid_check(self, pos):
+        """Return if the position is a solid tile"""
+        # Turn the position into JSON location
+        tile_location = str(int(pos[0] // self.size)) + ';' + str(int(pos[1] // self.size))
+        # If this tile in the tile map
+        if tile_location in self.tile_map:
+            # If it's solid (physics affected tile), return it
+            if self.tile_map[tile_location]["type"] in self.utilities.PHYSICS_TILES:
+                return self.tile_map[tile_location]
