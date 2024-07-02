@@ -12,6 +12,7 @@ from src.Camera import Camera
 from src.Clouds import Clouds
 from src.Animation import Animation
 from src.Particle import Particle
+from src.Spark import Spark
 
 
 class Pytformer:
@@ -76,7 +77,7 @@ class Pytformer:
         # Create tile map
         self.tile_map = TileMap(self)
         # Load it
-        self._load_level(0)
+        self._load_level("")
 
         # Camera
         self.camera = Camera(self)
@@ -164,6 +165,9 @@ class Pytformer:
         # Draw and update particles
         self._draw_particles()
 
+        # Draw projectiles
+        self._draw_projectiles()
+
         # Draw and update sparks
         self._draw_sparks()
 
@@ -217,7 +221,7 @@ class Pytformer:
             if spawner["variant"] == 0:
                 self.player.pos = spawner["pos"]
             else:
-                self.enemies.append(Enemy(self, spawner["pos"], (8, 15)))
+                self.enemies.append(Enemy(self, spawner["pos"], (8, 18)))
 
     def _draw_particles(self):
         """Update and draw particles"""
@@ -262,15 +266,38 @@ class Pytformer:
             # If projectile hit the solid surface, remove it
             if self.tile_map.solid_check(projectile[0]):
                 self.projectiles.remove(projectile)
+                # Create sparks
+                for spark_num in range(4):
+                    self.sparks.append(Spark(projectile[0],
+                                             random.random() - 0.5 + (math.pi if projectile[1] > 0 else 0),
+                                             2 + random.random()))
+
             # If projectile is in the world for around 6 seconds (360 frames), remove it
             elif projectile[2] > 360:
                 self.projectiles.remove(projectile)
+
             # If player isn't dashing, handle collision with projectile
             elif abs(self.player.dashing) < 50:
                 # If player is hit, handle it
                 if self.player.rect().collidepoint(projectile[0]):
                     # Remove the projectile
                     self.projectiles.remove(projectile)
+                    # Increase death count
+                    # self.death += 1
+
+                    # Create sparks and particles in-place of player
+                    for particle_num in range(25):
+                        angle = random.random() * math.pi * 2
+                        # Create spark with calculate angle and a random speed
+                        self.sparks.append(Spark(self.player.rect().center, angle, 2 + random.random()))
+
+                        # Calculate particle variables
+                        speed = random.random() * 5
+                        velocity = [math.cos(angle + math.pi) * speed * 0.5,
+                                    math.sin(angle + math.pi) * speed * 0.5]
+                        # Create particles with random speed and calculated velocity
+                        self.particles.append(Particle(self, "normal", self.player.rect().center,
+                                                       velocity, random.randint(0, 7)))
 
     def _spawn_leafs(self):
         """Spawn leafs at random frames, positions and intervals"""

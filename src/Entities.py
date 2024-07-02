@@ -4,6 +4,7 @@ import math
 import pygame
 
 from src.Particle import Particle
+from src.Spark import Spark
 
 
 class PhysicsEntity:
@@ -310,14 +311,34 @@ class Enemy(PhysicsEntity):
                     if self.flip_animation and distance[0] < 0:
                         self.game.projectiles.append(
                             [[self.rect().centerx - 1, self.rect().centery], -1.5, 0])
+                        for spark_num in range(4):
+                            self.game.sparks.append(Spark(self.game.projectiles[-1][0],
+                                                          random.random() - 0.5 + math.pi, 2 + random.random()))
                     # If player is on the right, and enemy is facing him, shoot
                     if not self.flip_animation and distance[0] > 0:
                         self.game.projectiles.append([[self.rect().centerx + 1, self.rect().centery], 1.5, 0])
+                        for spark_num in range(4):
+                            self.game.sparks.append(Spark(self.game.projectiles[-1][0],
+                                                          random.random() - 0.5, 2 + random.random()))
 
         # If enemy isn't walking, move every 100 frames for a random time
         elif random.random() < 0.01:
             self.walking = random.randint(30, 120)
         super().update(tile_map, movement)
+
+        # If enemy is moving, set its action to run
+        if movement[0] != 0:
+            self.set_action("run")
+        # Else, set it to idle
+        else:
+            self.set_action("idle")
+
+        # If player is dashing
+        if abs(self.game.player.dashing) >= 50:
+            # If enemy collides with player, create sparks and particles
+            if self.rect().colliderect(self.game.player.rect()):
+                for particle_num in range(20):
+                    angle = random.random() * math.pi * 2
 
     def draw(self, surface, offset=(0, 0)):
         """Draw the enemy"""
