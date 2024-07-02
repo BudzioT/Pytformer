@@ -70,14 +70,17 @@ class Pytformer:
         }
 
         # Create player
-        self.player = Player(self, (100, 100), (8, 17))
+        self.player = Player(self, (100, 100), (8, 15))
         # Clouds
         self.clouds = Clouds(self.assets["clouds"])
 
         # Create tile map
         self.tile_map = TileMap(self)
+
+        # Current level
+        self.level = 0
         # Load it
-        self._load_level("")
+        self._load_level(self.level)
 
         # Camera
         self.camera = Camera(self)
@@ -155,12 +158,12 @@ class Pytformer:
         # Draw the tile map
         self.tile_map.draw(self.display, self.camera.scroll)
 
-        for enemy in self.enemies.copy():
-            enemy.update(self.tile_map, (0, 0))
-            enemy.draw(self.display, self.camera.scroll)
+        # Draw the enemies
+        self._draw_enemies()
 
-        # Draw the player
-        self.player.draw(self.display, self.camera.scroll)
+        # Draw the player if he exists
+        if not self.death:
+            self.player.draw(self.display, self.camera.scroll)
 
         # Draw and update particles
         self._draw_particles()
@@ -171,15 +174,21 @@ class Pytformer:
         # Draw and update sparks
         self._draw_sparks()
 
+        # Draw the transition if needed
+        self._draw_transition()
+
         # Blit the rendering surface onto the main one, scale it
         self.surface.blit(
-            pygame.transform.scale(self.display, self.surface.get_size()), (0, 0))
+            pygame.transform.scale(self.display, self.surface.get_size()), self.camera.screen_shake_offset)
 
         # Update the display surface
         pygame.display.update()
 
     def _update_pos(self):
         """Update positions of things"""
+        # Update level transition
+        self._update_transition()
+
         # Update camera scroll
         self.camera.update_scroll(self.display)
 
@@ -187,8 +196,7 @@ class Pytformer:
         self._spawn_leafs()
 
         # Update the player
-        self.player.update(self.tile_map,
-                           (self.movement[1] - self.movement[0], 0))
+        self._update_player()
 
         # Update clouds
         self.clouds.update()
@@ -220,8 +228,16 @@ class Pytformer:
         for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
             if spawner["variant"] == 0:
                 self.player.pos = spawner["pos"]
+                # Reset the air time on death
+                self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner["pos"], (8, 18)))
+
+        # Death count
+        self.death = 0
+
+        # Level transition
+        self.transition = -30
 
     def _draw_particles(self):
         """Update and draw particles"""
@@ -283,7 +299,9 @@ class Pytformer:
                     # Remove the projectile
                     self.projectiles.remove(projectile)
                     # Increase death count
-                    # self.death += 1
+                    self.death += 1
+                    # Increase screen shake
+                    self.camera.screen_shake = max(16, self.camera.screen_shake)
 
                     # Create sparks and particles in-place of player
                     for particle_num in range(25):
@@ -306,6 +324,50 @@ class Pytformer:
                 pos = (leaf.x + random.random() * leaf.width, leaf.y + random.random() * leaf.height)
                 self.particles.append(Particle(self, "leaf", pos,
                                                [-0.1, 0.3], random.randint(0, 20)))
+
+    def _update_player(self):
+        if self.death:
+            self.death += 1
+            if self.death > 40:
+                self._load_level(self.level)
+
+        if not self.death:
+            self.player.update(self.tile_map, (self.movement[1] - self.movement[0], 0))
+
+    def _draw_enemies(self):
+        """Draw the enemies"""
+        # Go through every enemy alive
+        for enemy in self.enemies.copy():
+            # Update the enemy, return is it killed
+            kill = enemy.update(self.tile_map, (0, 0))
+            # Draw it
+            enemy.draw(self.display, self.camera.scroll)
+            # If it is killed, remove it from the list
+            if kill:
+                self.enemies.remove(enemy)
+
+    def _update_transition(self):
+        """Update the level transition"""
+        # If there are no more enemies left, increase the transition
+        if not len(self.enemies):
+            self.transition += 1
+            # If transition is past 30, load new level
+            if self.transition > 30:
+                self.level += 1
+                self._load_level(self.level)
+        # If transition is less than 0 (at the beginning), then increase it to show more of the map
+        if self.transition < 0:
+            self.transition += 1
+
+    def _draw_transition(self):
+        """Draw the level transition"""
+        # If transition is needed, draw one
+        if self.transition:
+            # Create special surface for it
+            transition_surface = pygame.Surface(self.display.get_size())
+            # Draw a circle based off transition value (times 8, because of surface size)
+            pygame.draw.circle(transition_surface, (255, 255, 255), (self.display.get_width() // 2,
+                               self.display.get_height() // 2), (30 - abs(self.transition)) * 8)
 
 
 # Only run the game with this file

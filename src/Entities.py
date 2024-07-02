@@ -140,6 +140,10 @@ class Player(PhysicsEntity):
         # Increase the time in air
         self.air_time += 1
 
+        # If the player is in the air for 2 seconds, kill him
+        if self.air_time > 120:
+            self.game.death += 1
+
         # If the player is standing, reset the time in air
         if self.collisions["Down"]:
             self.air_time = 0
@@ -337,8 +341,23 @@ class Enemy(PhysicsEntity):
         if abs(self.game.player.dashing) >= 50:
             # If enemy collides with player, create sparks and particles
             if self.rect().colliderect(self.game.player.rect()):
+                # Increase screen shake
+                self.game.camera.screen_shake = max(16, self.game.camera.screen_shake)
+                # Create sparks and particles
                 for particle_num in range(20):
+                    # Calculate variables
                     angle = random.random() * math.pi * 2
+                    speed = random.random() * 5
+                    velocity = [math.cos(angle + math.pi) * speed * 0.5,
+                                math.sin(angle + math.pi) * speed * 0.5]
+                    # Create them
+                    self.game.sparks.append(Spark(self.rect().center, angle, 2 + random.random()))
+                    self.game.particles.append(Particle(self.game, "normal", self.rect().center,
+                                                        velocity, random.randint(0, 7)))
+                # Add end sparks
+                self.game.sparks.append(Spark(self.rect().center, 0, 5 + random.random()))
+                self.game.sparks.append(Spark(self.rect().center, math.pi, 5 + random.random()))
+                return True
 
     def draw(self, surface, offset=(0, 0)):
         """Draw the enemy"""
