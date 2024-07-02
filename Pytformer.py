@@ -129,9 +129,11 @@ class Pytformer:
         # Movement to the left
         if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.movement[0] = True
+            self.player.last_movement = [-1, self.player.last_movement[1]]
         # Movement to the right
         if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.movement[1] = True
+            self.player.last_movement = [-1, self.player.last_movement[1]]
         # Jump
         if event.key == pygame.K_UP or event.key == pygame.K_w:
             self.player.jump()
