@@ -1,4 +1,5 @@
 import sys
+import os
 
 import pygame
 
@@ -58,6 +59,13 @@ class Editor:
 
         # Movement
         self.movement = [False, False, False, False]
+
+        # Load the level map if it exists
+        try:
+            self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
+        # Continue if file is not found
+        except FileNotFoundError:
+            pass
 
         # FPS timer
         self.timer = pygame.time.Clock()
@@ -155,11 +163,50 @@ class Editor:
 
     def _handle_keydown(self, event):
         """Handle key down events"""
-        pass
+        # Quit on escape pressed
+        if event.key == pygame.K_ESCAPE:
+            pygame.quit()
+            sys.exit()
+        # Movement to left
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            self.movement[0] = True
+        # Movement to right
+        if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+            self.movement[1] = True
+        # Movement up
+        if event.key == pygame.K_UP or event.key == pygame.K_w:
+            self.movement[2] = True
+        # Movement down
+        if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            self.movement[3] = True
+
+        # Change to on or off-grid placement with tab
+        if event.key == pygame.K_TAB:
+            self.grid = not self.grid
+        # Change variants by holding shift
+        if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+            self.shift = True
+        # Turn on auto-tiling with f key (it is close to movement, so it's more comfortable)
+        if event.key == pygame.K_f:
+            self.tile_map.auto_tile()
+        # Save the changes by clicking return (or enter)
+        if event.key == pygame.K_RETURN:
+            self.tile_map.save(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
 
     def _handle_keyup(self, event):
         """Handle key up events"""
-        pass
+        # Stop moving left
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            self.movement[0] = False
+        # Stop moving right
+        if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+            self.movement[1] = False
+        # Stop moving up
+        if event.key == pygame.K_UP or event.key == pygame.K_w:
+            self.movement[2] = False
+        # Stop moving down
+        if event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            self.movement[3] = False
 
     def _update_surface(self):
         """Update the surface"""
@@ -229,9 +276,29 @@ class Editor:
             formatted_index = str(self.tile_pos[0]) + ';' + str(self.tile_pos[1])
             self.tile_map.tile_map[formatted_index] = {"type": group, "variant": variant,
                                                        "pos": pos}
-        # Remove the tiles
+        # Remove the tiles on right click
         if self.right_click:
-            tile_location = str(self.tile_pos[0]) + ';' + str(self.tile_pos[1])
+            self._remove_tiles()
+
+    def _remove_tiles(self):
+        """Remove the existing tiles on right click"""
+        # Write location as JSON position
+        tile_location = str(self.tile_pos[0]) + ';' + str(self.tile_pos[1])
+        # If it's on grid, delete it
+        if tile_location in self.tile_map.tile_map:
+            del self.tile_map.tile_map[tile_location]
+        # Delete the off-grid tiles
+        for tile in self.tile_map.deco_tile_map.copy():
+            # Save the image of current tile
+            tile_img = self.assets[tile["type"]][tile["variant"]]
+            # Calculate its position in the world
+            rect_x = tile["pos"][0] - self.camera.scroll[0]
+            rect_y = tile["pos"][1] - self.camera.scroll[1]
+            # Create a rectangle for collision detection
+            tile_rect = pygame.Rect(rect_x, rect_y, tile_img.get_width(), tile_img.get_height())
+            # If mouse collides with tile, delete it
+            if tile_rect.collidepoint(self.mouse_pos):
+                self.tile_map.deco_tile_map.remove(tile)
 
     def _get_mouse_pos(self):
         """Get mouse position"""

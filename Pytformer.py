@@ -59,6 +59,8 @@ class Pytformer:
 
         # Create tile map
         self.tile_map = TileMap(self)
+        # Load it
+        self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
 
         # Camera
         self.camera = Camera(self)

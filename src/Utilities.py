@@ -17,6 +17,12 @@ class Utilities:
         self.PHYSICS_TILES = {"grass", "cobblestone"}
         # Render scale for rendering surface
         self.RENDER_SCALE = 2
+        # Auto tile rules
+        self.AUTO_TILE_RULES = {
+            tuple(sorted([(1, 0), (0, 1)])): 7,
+            tuple(sorted([(1, 0), (0, 1), (-1, 0)])): 5,
+            tuple(sorted([(-1, 0), (0, 1)])): 6
+        }
 
     def load_image(self, directory):
         """Load and return the image"""

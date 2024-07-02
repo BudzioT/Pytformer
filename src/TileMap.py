@@ -1,3 +1,5 @@
+import json
+
 import pygame
 
 from src.Utilities import Utilities
@@ -17,7 +19,7 @@ class TileMap:
         # Tile map affected by physics
         self.tile_map = {}
         # Tiles not affected by physics
-        self.deco_tile_map = {}
+        self.deco_tile_map = []
 
     def draw(self, surface, offset=(0, 0)):
         """Draw the tiles"""
@@ -70,3 +72,22 @@ class TileMap:
                                          tile["pos"][1] * self.size,
                                          self.size, self.size))
         return tiles
+
+    def save(self, path):
+        """Save all changes to a given file"""
+        # Open file in write mode
+        with open(path, "w") as file:
+            # Dump the tile map variables in JSON format
+            json.dump(
+                {"tile_map": self.tile_map, "tile_size": self.size, "off_grid": self.deco_tile_map}, file)
+
+    def load(self, path):
+        """Load changes from a given file"""
+        # Open file in read mode
+        with open(path, "r") as file:
+            # Save the data from JSON format
+            data = json.load(file)
+        # Save all information
+        self.tile_map = data["tile_map"]
+        self.size = data["tile_size"]
+        self.deco_tile_map = data["off_grid"]
