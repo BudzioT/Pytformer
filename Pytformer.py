@@ -83,6 +83,13 @@ class Pytformer:
             # Add it to the list
             self.leaf_spawners.append(leaf_spawner)
 
+        # Set up entity spawners
+        for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
+            if spawner["variant"] == 0:
+                self.player.pos = spawner["pos"]
+            else:
+                print("Enemy spawner pos:", spawner["pos"])
+
         # Camera
         self.camera = Camera(self)
 
@@ -137,6 +144,9 @@ class Pytformer:
         # Jump
         if event.key == pygame.K_UP or event.key == pygame.K_w:
             self.player.jump()
+        # Dash
+        if event.key == pygame.K_x or event.key == pygame.K_l:
+            self.player.dash()
 
     def _handle_keyup_events(self, event):
         """Handle keyup events"""

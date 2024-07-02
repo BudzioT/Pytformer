@@ -1,4 +1,9 @@
+import random
+import math
+
 import pygame
+
+from src.Particle import Particle
 
 
 class PhysicsEntity:
@@ -121,6 +126,9 @@ class Player(PhysicsEntity):
 
         # Jumps limit
         self.jumps = 1
+        # Dash
+        self.dashing = 0
+
         # Wall slide flag
         self.wall_slide = False
 
@@ -141,7 +149,7 @@ class Player(PhysicsEntity):
         self.wall_slide = False
 
         # If player collides with wall and is in the air, turn on the wall slide
-        if (self.collisions["Left"] or self.collisions["Right"]) and self.air_time > 5:
+        if (self.collisions["Left"] or self.collisions["Right"]) and self.air_time > 4:
             self.wall_slide = True
             # Limit the fall velocity to 0.5
             self.velocity[1] = min(self.velocity[1], 0.5)
@@ -158,7 +166,7 @@ class Player(PhysicsEntity):
         # If user is not sliding, change the action to the correct one
         if not self.wall_slide:
             # If the player is long in the air, set action to jump
-            if self.air_time > 5:
+            if self.air_time > 4:
                 self.set_action("jump")
 
             # If user is in place, set action to idle
@@ -168,13 +176,51 @@ class Player(PhysicsEntity):
             else:
                 self.set_action("run")
 
-        print("Update velocity", self.velocity)
+        # If the players is dashing in the first 10 frames (dash time), create 15 particles
+        if abs(self.dashing) in {60, 50}:
+            # Create 15 particles
+            for particle_num in range(15):
+                # Calculate the angle, speed and velocity of particles
+                angle = random.random() * math.pi * 2
+                speed = random.random() * 0.5 + 0.5
+                particle_velocity = [math.cos(angle) * speed, math.sin(angle) * speed]
+                # Create a particle with calculated variables
+                self.game.particles.append(Particle(self.game, "normal",
+                                                    self.rect().center, particle_velocity,
+                                                    random.randint(0, 7)))
 
-        # Mini air resistance in the right direction
+        # If player is dashing to the right, decrease the dashing time
+        if self.dashing > 0:
+            self.dashing = max(0, self.dashing - 1)
+        # If player is dashing to the left, decrease the time
+        if self.dashing < 0:
+            self.dashing = min(0, self.dashing + 1)
+
+        # If it's the first 10 frame of dash, set the dash velocity to high one
+        if abs(self.dashing) > 50:
+            self.velocity[0] = abs(self.dashing) / self.dashing * 8
+            # Stop the dash at 9th frame
+            if abs(self.dashing) == 51:
+                self.velocity[0] *= 0.1
+
+            # Make the particle velocity a little random
+            particle_velocity = [abs(self.dashing) / self.dashing * random.random() * 3, 0]
+            # Spawn the particles at the center of player position, with particle velocity, at random frame
+            self.game.particles.append(Particle(self.game, "normal", self.rect().center,
+                                                particle_velocity, random.randint(0, 7)))
+
+        # If player velocity is in the right direction, slowly decrease it
         if self.velocity[0] > 0:
             self.velocity[0] = max(self.velocity[0] - 0.1, 0)
+        # Do it for the left too
         else:
-            self.velocity[0] = max(self.velocity[0] + 0.1, 0)
+            self.velocity[0] = min(self.velocity[0] + 0.1, 0)
+
+    def draw(self, surface, offset=(0, 0)):
+        """Draw the player"""
+        # If dashing ended, render the player normally
+        if abs(self.dashing) <= 50:
+            super().draw(surface, offset)
 
     def jump(self):
         """Make the player jump"""
@@ -183,28 +229,23 @@ class Player(PhysicsEntity):
         if self.wall_slide:
             # If player is facing right and is trying to move left
             if self.flip_animation and self.last_movement[0] < 0:
-                print("LLLLLLLLLLLLLLLLLLL WALL SLIDE!")
-                # Push the player off the wall
                 self.velocity[0] = 3.5
                 # Push him a little higher
                 self.velocity[1] = -2.5
                 # Set air time
-                self.air_time = 6
+                self.air_time = 5
                 # Decrease the jumps
                 self.jumps = max(0, self.jumps - 1)
                 return True
 
             # If player is facing left and is trying to move right
             elif not self.flip_animation and self.last_movement[0] > 0:
-                print("RRRRRRRRRRRRRRRRRRRRRRR WALL SLIDE!")
                 # Push the player off the wall
                 self.velocity[0] = -3.5
                 # Push him a little higher
                 self.velocity[1] = -2.5
                 # Set air time
-                self.air_time = 6
-
-                print("Jump velocity:", self.velocity)
+                self.air_time = 5
 
                 # Decrease the jumps
                 self.jumps = max(0, self.jumps - 1)
@@ -217,5 +258,16 @@ class Player(PhysicsEntity):
             # Decrease jumps count
             self.jumps -= 1
             # Set the air time to amount needed for jump action
-            self.air_time = 6
+            self.air_time = 5
             return True
+
+    def dash(self):
+        """Make player dash"""
+        # If player isn't dashing
+        if not self.dashing:
+            # If dashing to the left, set the dashing direction to left (minus) and time to 60
+            if self.flip_animation:
+                self.dashing = -60
+            # If dashing to the right, set the dashing direction to right and time to 60
+            else:
+                self.dashing = 60

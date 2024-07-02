@@ -126,7 +126,7 @@ class TileMap:
                     self.deco_tile_map.remove(tile)
 
         # Go through each grid tile
-        for location in self.tile_map:
+        for location in self.tile_map.copy():
             tile = self.tile_map[location]
             # If tile is in pair, append it to the list
             if (tile["type"], tile["variant"]) in id_pairs:

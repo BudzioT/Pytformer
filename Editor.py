@@ -34,6 +34,8 @@ class Editor:
             # Tiles
             "grass": self.utilities.load_images("tiles/grass"),
             "cobblestone": self.utilities.load_images("tiles/cobblestone"),
+            # Spawners
+            "spawners": self.utilities.load_images("tiles/spawners"),
             # Others
             "decorations": self.utilities.load_images("tiles/decorations"),
             "big_decorations": self.utilities.load_images("tiles/big_decorations")
