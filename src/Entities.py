@@ -300,9 +300,19 @@ class Enemy(PhysicsEntity):
 
             # Decrease the timer
             self.walking = max(0, self.walking - 1)
-
+            # If the enemy isn't walking, shoot the projectile
             if not self.walking:
-                pass
+                # Calculate distance between player and the enemy
+                distance = (self.game.player.pos[0] - self.pos[0], self.game.player.pos[1] - self.pos[1])
+                # If vertical distance between them is lower than 16 pixels
+                if abs(distance[1]) < 16:
+                    # If player is on the left, and enemy is facing him, shoot
+                    if self.flip_animation and distance[0] < 0:
+                        self.game.projectiles.append(
+                            [[self.rect().centerx - 1, self.rect().centery], -1.5, 0])
+                    # If player is on the right, and enemy is facing him, shoot
+                    if not self.flip_animation and distance[0] > 0:
+                        self.game.projectiles.append([[self.rect().centerx + 1, self.rect().centery], 1.5, 0])
 
         # If enemy isn't walking, move every 100 frames for a random time
         elif random.random() < 0.01:
@@ -315,11 +325,11 @@ class Enemy(PhysicsEntity):
 
         # If the enemy is facing left, flip the gun too, place it in the correct placement
         if self.flip_animation:
-            pos_x = self.rect().centerx - 4 - self.game.assets["gun"].get_width() - offset[0]
-            pos_y = self.rect().centerx - 4 - self.game.assets["gun"].get_width() - offset[1]
+            pos_x = self.rect().centerx - 1 - self.game.assets["gun"].get_width() - offset[0]
+            pos_y = self.rect().centery - 1 - self.game.assets["gun"].get_height() + 4 - offset[1]
             surface.blit(pygame.transform.flip(self.game.assets["gun"], True, False),
                          (pos_x, pos_y))
         # Else just place it correctly
         else:
-            surface.blit(self.game.assets["gun"], (self.rect().centerx + 4 - offset[0],
+            surface.blit(self.game.assets["gun"], (self.rect().centerx + 1 - offset[0],
                                                    self.rect().centery - offset[1]))

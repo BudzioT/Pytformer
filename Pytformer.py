@@ -47,6 +47,7 @@ class Pytformer:
             "background": self.utilities.load_image("sky/background.png"),
             "clouds": self.utilities.load_images("sky/clouds/"),
             "gun": self.utilities.load_image("weapon/gun.png"),
+            "bullet": self.utilities.load_image("weapon/bullet.png"),
             # Player animations
             "player_animations": {
                 "jump": Animation(self.utilities.load_images("entities/player/jump"), 5),
@@ -75,29 +76,7 @@ class Pytformer:
         # Create tile map
         self.tile_map = TileMap(self)
         # Load it
-        self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
-
-        # Particles
-        self.particles = []
-
-        # Leaf particle spawners - the trees
-        self.leaf_spawners = []
-        # Go through each tree in the map
-        for tree in self.tile_map.extract([("big_decorations", 1)], True):
-            # Calculate the spawner location based off tree
-            leaf_spawner = pygame.Rect(4 + tree["pos"][0], 4 + tree["pos"][1], 23, 13)
-            # Add it to the list
-            self.leaf_spawners.append(leaf_spawner)
-
-        # Enemies
-        self.enemies = []
-
-        # Set up entity spawners
-        for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
-            if spawner["variant"] == 0:
-                self.player.pos = spawner["pos"]
-            else:
-                self.enemies.append(Enemy(self, spawner["pos"], (8, 15)))
+        self._load_level(0)
 
         # Camera
         self.camera = Camera(self)
@@ -182,8 +161,11 @@ class Pytformer:
         # Draw the player
         self.player.draw(self.display, self.camera.scroll)
 
-        # Draw and update the particles
+        # Draw and update particles
         self._draw_particles()
+
+        # Draw and update sparks
+        self._draw_sparks()
 
         # Blit the rendering surface onto the main one, scale it
         self.surface.blit(
@@ -203,8 +185,39 @@ class Pytformer:
         # Update the player
         self.player.update(self.tile_map,
                            (self.movement[1] - self.movement[0], 0))
+
         # Update clouds
         self.clouds.update()
+
+    def _load_level(self, level_id):
+        """Load level with given id"""
+        self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level")
+                           + str(level_id) + ".json")
+        # Particles
+        self.particles = []
+        # Projectiles
+        self.projectiles = []
+        # Sparks
+        self.sparks = []
+
+        # Leaf particle spawners - the trees
+        self.leaf_spawners = []
+        # Go through each tree in the map
+        for tree in self.tile_map.extract([("big_decorations", 1)], True):
+            # Calculate the spawner location based off tree
+            leaf_spawner = pygame.Rect(4 + tree["pos"][0], 4 + tree["pos"][1], 23, 13)
+            # Add it to the list
+            self.leaf_spawners.append(leaf_spawner)
+
+        # Enemies
+        self.enemies = []
+
+        # Set up entity spawners
+        for spawner in self.tile_map.extract([("spawners", 0), ("spawners", 1)], False):
+            if spawner["variant"] == 0:
+                self.player.pos = spawner["pos"]
+            else:
+                self.enemies.append(Enemy(self, spawner["pos"], (8, 15)))
 
     def _draw_particles(self):
         """Update and draw particles"""
@@ -220,6 +233,44 @@ class Pytformer:
             # If it was the last frame and particle is not active, delete it
             if end:
                 self.particles.remove(particle)
+
+    def _draw_sparks(self):
+        """Update and draw sparks"""
+        # Go through every spark
+        for spark in self.sparks.copy():
+            # Update it, save if this was the last frame
+            end = spark.update()
+            # Draw it
+            spark.draw(self.display, self.camera.scroll)
+            # If this was the last frame, remove the spark
+            if end:
+                self.sparks.remove(spark)
+
+    def _draw_projectiles(self):
+        """Draw the projectiles"""
+        # Go through every projectile (format: [[x, y], direction, timer])
+        for projectile in self.projectiles.copy():
+            # Add direction to the position - update position
+            projectile[0][0] += projectile[1]
+            # Increase the timer
+            projectile[2] += 1
+
+            image = self.assets["bullet"]
+            # Display the projectile in correct place in the world
+            self.display.blit(image, (projectile[0][0] - image.get_width() / 2 - self.camera.scroll[0],
+                                      projectile[0][1] - image.get_height() / 2 - self.camera.scroll[1]))
+            # If projectile hit the solid surface, remove it
+            if self.tile_map.solid_check(projectile[0]):
+                self.projectiles.remove(projectile)
+            # If projectile is in the world for around 6 seconds (360 frames), remove it
+            elif projectile[2] > 360:
+                self.projectiles.remove(projectile)
+            # If player isn't dashing, handle collision with projectile
+            elif abs(self.player.dashing) < 50:
+                # If player is hit, handle it
+                if self.player.rect().collidepoint(projectile[0]):
+                    # Remove the projectile
+                    self.projectiles.remove(projectile)
 
     def _spawn_leafs(self):
         """Spawn leafs at random frames, positions and intervals"""
