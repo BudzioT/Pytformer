@@ -5,12 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7db572a5-7e69-424e-a551-2fcb4f00ee0f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Particle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Editor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Editor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pytformer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pytformer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dependencies/data/level.json" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/data/level.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/tiles/decorations/4.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/tiles/big_decorations/0.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/tiles/decorations/5.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/tiles/big_decorations/1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dependencies/images/tiles/decorations/6.png" beforeDir="false" afterPath="$PROJECT_DIR$/dependencies/images/tiles/big_decorations/2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entities.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Particle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Particle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TileMap.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TileMap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utilities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,29 +40,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.Editor.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Entities.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Pytformer.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TileMap.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.Editor.executor": "Run",
+    "Python.Entities.executor": "Run",
+    "Python.Particle.executor": "Run",
+    "Python.Pytformer.executor": "Run",
+    "Python.TileMap.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\tiles\big_decorations" />
+      <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\particles\leaf" />
       <recent name="D:\Pobrane\Github_projects\Pytformer\src" />
       <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\sky\clouds" />
       <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies\images\sky" />
-      <recent name="D:\Pobrane\Github_projects\Pytformer\dependencies" />
-      <recent name="D:\Pobrane\Github_projects\Pytformer" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -79,7 +84,7 @@
       <updated>1719775198219</updated>
       <workItem from="1719775199574" duration="3641000" />
       <workItem from="1719828729584" duration="30667000" />
-      <workItem from="1719903349438" duration="7396000" />
+      <workItem from="1719903349438" duration="11016000" />
     </task>
     <servers />
   </component>
@@ -87,9 +92,10 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Pytformer$Particle.coverage" NAME="Particle Coverage Results" MODIFIED="1719913807092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Pytformer$TileMap.coverage" NAME="TileMap Coverage Results" MODIFIED="1719908745337" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/Pytformer$Pytformer.coverage" NAME="Pytformer Coverage Results" MODIFIED="1719908865615" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Pytformer$Editor.coverage" NAME="Editor Coverage Results" MODIFIED="1719908748375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Pytformer$Pytformer.coverage" NAME="Pytformer Coverage Results" MODIFIED="1719913903956" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Pytformer$Editor.coverage" NAME="Editor Coverage Results" MODIFIED="1719914227709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Pytformer$Entities.coverage" NAME="Entities Coverage Results" MODIFIED="1719838463087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>

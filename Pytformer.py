@@ -1,5 +1,7 @@
+import math
 import sys
 import os
+import random
 
 import pygame
 
@@ -9,6 +11,7 @@ from src.TileMap import TileMap
 from src.Camera import Camera
 from src.Clouds import Clouds
 from src.Animation import Animation
+from src.Particle import Particle
 
 
 class Pytformer:
@@ -40,6 +43,7 @@ class Pytformer:
             "cobblestone": self.utilities.load_images("tiles/cobblestone"),
             # Others
             "decorations": self.utilities.load_images("tiles/decorations"),
+            "big_decorations": self.utilities.load_images("tiles/big_decorations"),
             "background": self.utilities.load_image("sky/background.png"),
             "clouds": self.utilities.load_images("sky/clouds/"),
             # Player animations
@@ -52,7 +56,8 @@ class Pytformer:
             },
             # Particles
             "particles": {
-                "normal": Animation(self.utilities.load_images("particles/normal"), 20, False)
+                "normal": Animation(self.utilities.load_images("particles/normal"), 20, False),
+                "leaf": Animation(self.utilities.load_images("particles/leaf"), 20, False)
             }
         }
 
@@ -65,6 +70,18 @@ class Pytformer:
         self.tile_map = TileMap(self)
         # Load it
         self.tile_map.load(os.path.join(self.utilities.BASE_PATH, "../dependencies/data/level.json"))
+
+        # Particles
+        self.particles = []
+
+        # Leaf particle spawners - the trees
+        self.leaf_spawners = []
+        # Go through each tree in the map
+        for tree in self.tile_map.extract([("big_decorations", 1)], True):
+            # Calculate the spawner location based off tree
+            leaf_spawner = pygame.Rect(4 + tree["pos"][0], 4 + tree["pos"][1], 23, 13)
+            # Add it to the list
+            self.leaf_spawners.append(leaf_spawner)
 
         # Camera
         self.camera = Camera(self)
@@ -117,7 +134,7 @@ class Pytformer:
             self.movement[1] = True
         # Jump
         if event.key == pygame.K_UP or event.key == pygame.K_w:
-            self.player.velocity[1] = -3
+            self.player.jump()
 
     def _handle_keyup_events(self, event):
         """Handle keyup events"""
@@ -140,6 +157,9 @@ class Pytformer:
         # Draw the player
         self.player.draw(self.display, self.camera.scroll)
 
+        # Draw and update the particles
+        self._draw_particles()
+
         # Blit the rendering surface onto the main one, scale it
         self.surface.blit(
             pygame.transform.scale(self.display, self.surface.get_size()), (0, 0))
@@ -152,11 +172,37 @@ class Pytformer:
         # Update camera scroll
         self.camera.update_scroll(self.display)
 
+        # Spawn leafs
+        self._spawn_leafs()
+
         # Update the player
         self.player.update(self.tile_map,
                            (self.movement[1] - self.movement[0], 0))
         # Update clouds
         self.clouds.update()
+
+    def _draw_particles(self):
+        """Update and draw particles"""
+        # Go through each particle that is active
+        for particle in self.particles.copy():
+            # Update the particle, store if it was the last frame
+            end = particle.update()
+            # Draw it
+            particle.draw(self.display, self.camera.scroll)
+            # If it was leaf, update its position, so it seems like it floats
+            if particle.type == "leaf":
+                particle.pos[0] += math.sin(particle.animation.frame * 0.03) * 0.3
+            # If it was the last frame and particle is not active, delete it
+            if end:
+                self.particles.remove(particle)
+
+    def _spawn_leafs(self):
+        """Spawn leafs at random frames, positions and intervals"""
+        for leaf in self.leaf_spawners:
+            if random.random() * 49999 < leaf.width * leaf.height:
+                pos = (leaf.x + random.random() * leaf.width, leaf.y + random.random() * leaf.height)
+                self.particles.append(Particle(self, "leaf", pos,
+                                               [-0.1, 0.3], random.randint(0, 20)))
 
 
 # Only run the game with this file

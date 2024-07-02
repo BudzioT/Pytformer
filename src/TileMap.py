@@ -113,3 +113,31 @@ class TileMap:
                                                                      in self.utilities.AUTO_TILE_RULES):
                 tile["variant"] = self.utilities.AUTO_TILE_RULES[near_tiles]
 
+    def extract(self, id_pairs, keep=False):
+        """Get all tiles from given pairs, remove them if needed"""
+        matches = []
+        # Go through each off-grid tile
+        for tile in self.deco_tile_map.copy():
+            # If tile is in pair, append it to the list
+            if (tile["type"], tile["variant"]) in id_pairs:
+                matches.append(tile.copy())
+                # If it isn't needed, remove it
+                if not keep:
+                    self.deco_tile_map.remove(tile)
+
+        # Go through each grid tile
+        for location in self.tile_map:
+            tile = self.tile_map[location]
+            # If tile is in pair, append it to the list
+            if (tile["type"], tile["variant"]) in id_pairs:
+                # Get the copy
+                matches.append(tile.copy())
+                matches[-1]["pos"] = matches[-1]["pos"].copy()
+                # Convert size to pixels
+                matches[-1]["pos"][0] *= self.size
+                matches[-1]["pos"][1] *= self.size
+                # If it isn't needed anymore remove it
+                if not keep:
+                    del self.tile_map[location]
+
+        return matches

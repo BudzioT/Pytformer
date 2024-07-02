@@ -35,7 +35,8 @@ class Editor:
             "grass": self.utilities.load_images("tiles/grass"),
             "cobblestone": self.utilities.load_images("tiles/cobblestone"),
             # Others
-            "decorations": self.utilities.load_images("tiles/decorations")
+            "decorations": self.utilities.load_images("tiles/decorations"),
+            "big_decorations": self.utilities.load_images("tiles/big_decorations")
         }
 
         # Tile general variables
@@ -113,15 +114,6 @@ class Editor:
         # Handle left click
         if event.button == 1:
             self.click = True
-            # If the element is an off-grid one, place the decoration
-            if not self.grid:
-                # Get the group, variant and position
-                group = self.tile_list[self.tile_group]
-                variant = self.tile_variant
-                pos = (self.mouse_pos[0] + self.camera.scroll[0], self.mouse_pos[1] +
-                       self.camera.scroll[1])
-                # Save them into JSON format
-                self.tile_map.deco_tile_map.append({"type": group, "variant": variant, "pos": pos})
         # Handle right click
         if event.button == 3:
             # Set right click to true, informing that user wants to delete something
@@ -279,6 +271,16 @@ class Editor:
         # Remove the tiles on right click
         if self.right_click:
             self._remove_tiles()
+
+        # If the element is an off-grid one, place the decoration
+        if self.click and not self.grid:
+            # Get the group, variant and position
+            group = self.tile_list[self.tile_group]
+            variant = self.tile_variant
+            pos = (self.mouse_pos[0] + self.camera.scroll[0], self.mouse_pos[1] +
+                    self.camera.scroll[1])
+            # Save them into JSON format
+            self.tile_map.deco_tile_map.append({"type": group, "variant": variant, "pos": pos})
 
     def _remove_tiles(self):
         """Remove the existing tiles on right click"""

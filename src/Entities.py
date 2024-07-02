@@ -112,6 +112,8 @@ class Player(PhysicsEntity):
         super().__init__(game, "player", pos, size)
         # Time in air
         self.air_time = 0
+        # Jumps limit
+        self.jumps = 1
 
     def update(self, tile_map, movement=(0, 0)):
         """Update the player position"""
@@ -134,3 +136,8 @@ class Player(PhysicsEntity):
         # If user isn't in place, set action to run
         else:
             self.set_action("run")
+
+    def jump(self):
+        """Make the player jump"""
+        if self.jumps:
+            self.velocity[1] = -3

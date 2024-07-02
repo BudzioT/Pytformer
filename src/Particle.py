@@ -11,14 +11,14 @@ class Particle:
         self.pos = list(pos)
         self.velocity = list(velocity)
         # Animation variables
-        self.animation = self.game.assets["particles"][self.type].copy()
+        self.animation = self.game.assets["particles"][self.type].copy_animation()
         self.animation.frame = frame
 
     def update(self):
         """Update particle frame and position"""
         end = False
         # If animation ends, set the flag to True
-        if self.animation.done:
+        if self.animation.end:
             end = True
 
         # Update position
